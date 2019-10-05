@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  reverse-proxy:
+    image: traefik:v2.0
+    command:
+      - "--api.insecure=true"                      # Enables the web UI and tells Traefik to listen to docker
+      - "--providers.docker"                       # Docker provider
+      - "--providers.docker.network=ctfdd_backend" # Docker network
+    ports:
+      - "80:80"     # The HTTP port
+      - "8080:8080" # The Web UI (enabled by --api)
+    networks:
+      - default
+      - ctfdd_backend
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
+    labels:
+      - "id.ac.ui.cs.ctf.project"
+      - "id.ac.ui.cs.ctf.service=ctfdd_proxy"
+
+networks:
+  default:
+  ctfdd_backend:
+    external: true
